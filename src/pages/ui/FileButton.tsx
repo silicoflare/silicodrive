@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { EyeIcon, EyeOffIcon, FileIcon, TrashIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, FileIcon, LinkIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { File } from "~/utils";
 import download from "downloadjs";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { useToast } from "~/components/ui/use-toast";
+import copy from "copy-to-clipboard";
 
 export default function FileButton({ file } : { file: File })   {
     const queryClient = useQueryClient();
@@ -105,6 +106,12 @@ export default function FileButton({ file } : { file: File })   {
                         </div>
                     </DialogContent>
                 </Dialog>
+                <LinkIcon size={20} onClick={() => {
+                    copy(`${window.location.origin}/${file.owner}/files${file.path}${file.path !== "/" ? "/" : ""}${file.name}`);
+                    toast({
+                        description: "Link copied to clipboard"
+                    });    
+                }} />
             </div>
         </div>
     )

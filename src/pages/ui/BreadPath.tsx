@@ -13,7 +13,7 @@ export default function BreadPath({ path } : { path: string[] }) {
 
     useEffect(() => {
         setLinks(() => {
-            const newPath = [ "http://localhost:3000/files", ...path.slice(1) ];
+            const newPath = [ `${window.location.origin}/files`, ...path.slice(1) ];
             // console.log(newPath);
             const newLinks: string[] = [];
 
