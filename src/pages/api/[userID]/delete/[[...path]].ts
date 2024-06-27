@@ -15,8 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ status: 401, error: "Unauthorized" });
     }
 
-    const newPath = path ? "/" + (path as string[]).join("/") : "/";
-    // console.log(newPath);
+    const newPath = path ? "/" + (path as string[]).filter(x => x !== "delete").join("/") : "/";
+    console.log(newPath);
 
     const fileData = await db.file.findFirst({
         where: {
@@ -30,7 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ status: 404, error: "File not found" });
     }
 
-    const file = await supabase.storage.from("silicodrive").getPublicUrl(fileData.url);
+    const file = await supabase.storage.from("silicodrive").remove([ fileData.url ]);
 
-    return res.status(200).json({ status: 200, fileName: fileData.name, fileURL: file.data.publicUrl });
+    await db.file.delete({
+        where: {
+            fileID: fileData.fileID
+        }
+    });
+
+    return res.status(200).json({ status: 200, fileName: fileData.name, message: "File deleted" });
 }

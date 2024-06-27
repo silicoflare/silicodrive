@@ -15,22 +15,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ status: 401, error: "Unauthorized" });
     }
 
-    const newPath = path ? "/" + (path as string[]).join("/") : "/";
-    // console.log(newPath);
+    const newPath = path ? "/" + (path as string[]).filter(x => x !== "delete").join("/") : "/";
+    console.log(newPath);
 
-    const fileData = await db.file.findFirst({
+    const folderData = await db.file.findFirst({
         where: {
             owner: session.user.id,
             path: path ? "/" + (path.slice(0, -1) as string[]).join("/") : "/",
             name: path ? path[path.length - 1] : ""
         }
     });
+    
 
-    if (!fileData)  {
+    if (!folderData)  {
         return res.status(404).json({ status: 404, error: "File not found" });
     }
 
-    const file = await supabase.storage.from("silicodrive").getPublicUrl(fileData.url);
+    const contents = await db.file.findMany({  
+        where: {
+            owner: session.user.id,
+            path: newPath
+        }
+    });
 
-    return res.status(200).json({ status: 200, fileName: fileData.name, fileURL: file.data.publicUrl });
+    if (contents.length > 0)    {
+        return res.status(400).json({ status: 400, error: "Folder is not empty" });
+    }
+
+    const folder = await supabase.storage.from("silicodrive").remove([ `${folderData.owner}${newPath}` ]);
+
+    await db.file.delete({
+        where: {
+            fileID: folderData.fileID
+        }
+    });
+
+    return res.status(200).json({ status: 200, message: "Folder deleted" });
 }

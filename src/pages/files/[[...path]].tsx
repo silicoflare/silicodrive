@@ -13,25 +13,19 @@ import FileViewer from "../ui/FileViewer";
 export default function NavigatePath()  {
     const router = useRouter();
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
     
     const path = router.isReady ? ["/", ...(Array.isArray(router.query.path) ? router.query.path : [])] : [];
 
-    // useEffect(() => {
-    //     const creator = async () => {
-    //         if (session)    {
-    //             if (path.length === 1)  {
-    //                 const res = await (await fetch(`/api/${session.user.id}/create`)).json();
-    //             }
-    //         }
-    //     };
-        
-    //     creator();
-    // }, [ session, path ]);
+    useEffect(() => {
+        queryClient.invalidateQueries();
+        console.log(path);
+    }, []);
 
     return (
         <>
             <Head>
-                <title>Files in { path.length !== 1 ? path.join("/") : "/" } - SilicoDrive</title>
+                <title>Files in { "/" + path.slice(1).join("/") } - SilicoDrive</title>
             </Head>
             <div className={`flex flex-col items-center w-screen h-screen ${font}`}>
                 <div className="w-full py-5 px-7 flex flex-row items-center justify-between">
@@ -45,8 +39,8 @@ export default function NavigatePath()  {
                     </div>
                 </div>
                 <BreadPath path={path} />
-                <FormDialog path={path.length !== 1 ? path.join("/") : "/"} />
-                <FileViewer path={path.length !== 1 ? path.join("/") : "/"} />
+                <FormDialog path={"/" + path.slice(1).join("/")} />
+                <FileViewer path={"/" + path.slice(1).join("/")} />
             </div>
         </>
     )

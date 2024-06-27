@@ -1,31 +1,25 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileIcon, TrashIcon } from "lucide-react";
+import { FileIcon, Folder, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { File } from "~/utils";
 import download from "downloadjs";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { useToast } from "~/components/ui/use-toast";
+import { useRouter } from "next/router";
 
-export default function FileButton({ file } : { file: File })   {
+export default function FolderButton({ file } : { file: File })   {
+    const router = useRouter();
     const queryClient = useQueryClient();
     const { toast } = useToast();
-
-    const { data } = useQuery({
-        queryKey: [ 'getURL' ],
-        queryFn: async () => {
-            const res = await (await fetch(`/api/${file.owner}/file/${file.path}/${file.name}`)).json();
-            return res;
-        }
-    });
 
     return (
         <div className="w-full grid grid-cols-7 border rounded-md py-4 px-7 cursor-pointer">
             <div className="col-span-1">
-                <FileIcon size={24} />
+                <Folder size={24} />
             </div>
-            <div className="col-span-3 hover:underline" onClick={_ => download(data.fileURL, data.fileName)}>
+            <a className="col-span-3 hover:underline" href={`${router.asPath}${router.asPath.endsWith('/') ? '' : '/'}${file.name}`}>
                 {file.name}
-            </div>
+            </a>
             <div className="col-span-3 flex items-center gap-x-3">
                 <Dialog>
                     <DialogTrigger>
@@ -33,28 +27,34 @@ export default function FileButton({ file } : { file: File })   {
                     </DialogTrigger>
                     <DialogContent>
                         <div className="flex flex-col gap-y-2">
-                            <p className="w-full text-center mb-3">Are you sure you want to delete this file?</p>
+                            <p className="w-full text-center mb-3">Are you sure you want to delete this folder?</p>
                             <div className="flex gap-x-2 w-full items-center justify-center">
                                 <DialogClose>
                                     <button className="bg-red-600 text-white px-3 py-1 rounded-md w-20 cursor-pointer" onClick={async _ => {
                                         toast({
-                                            description: "Deleting file...",
+                                            description: "Deleting folder...",
                                         });
 
-                                        const res = await fetch(`/api/${file.owner}/delete/${file.path}/${file.name}`, {
+                                        const res = await fetch(`/api/${file.owner}/deletedir/${file.path}/${file.name}`, {
                                             method: "DELETE"
                                         });
 
                                         if (res.status === 200) {
                                             toast({
-                                                description: "File deleted successfully!"
+                                                description: "Folder deleted successfully!"
                                             });
                                             queryClient.invalidateQueries();
+                                        }
+                                        else if (res.status === 400) {
+                                            toast({
+                                                variant: "destructive",
+                                                description: "Folder is not empty"
+                                            });
                                         }
                                         else    {
                                             toast({
                                                 variant: "destructive",
-                                                description: "Failed to delete file"
+                                                description: "Failed to delete folder"
                                             });
                                         }
                                     }}>Yes</button>

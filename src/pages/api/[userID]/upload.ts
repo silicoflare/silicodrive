@@ -55,13 +55,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const uploadPath = `${user.id}${path}/${file.originalFilename}`.replace(/\/\//g, "/")
     const fileContent = await fs.promises.readFile(file.filepath);
 
+    console.log(`Uploading file to ${uploadPath}`);
+    
 
     const up = await supabase.storage
       .from('silicodrive')
       .upload(uploadPath, fileContent);
 
     if (up.error) {
-        return res.status(500).json({ status: 500, message: "Internal error" });
+        return res.status(500).json({ status: 500, message: up.error.message });
     }
 
     const status = await db.file.create({
