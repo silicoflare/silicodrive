@@ -1,29 +1,35 @@
-# Create T3 App
+# SilicoDrive
+SilicoDrive is a file storage and synchronization platform designed to simplify the process of managing and accessing your files across multiple devices. With SilicoDrive, you can securely store, organize, and share your files, ensuring that they are always up-to-date and accessible whenever you need them.
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Features
+- **File Storage**: SilicoDrive provides a reliable and scalable storage solution for your files. You can upload, download, and manage your files with ease.
 
-## What's next? How do I make an app with this?
+- **Synchronization**: SilicoDrive keeps your files in sync across all your devices. Any changes made to a file on one device will be automatically reflected on all other devices.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **Sharing**: SilicoDrive allows you to share files with others. You can control the level of access and permissions for each shared item.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Installation
+To use SilicoDrive, follow these steps:
 
-## Learn More
+1. Clone the repository:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+    ```bash
+    git clone https://github.com/silicoflare/silicodrive.git
+    ```
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+2. Install the required dependencies:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+    ```bash
+    bun install
+    ```
 
-## How do I deploy this?
+3. Make a copy of `.env.example`, name it `.env`, configure all the required stuff and fill in the variables.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+3. Start the application:
+
+    ```bash
+    bun run dev
+    ```
+
+4. Access SilicoDrive in your web browser at `http://localhost:3000`.
