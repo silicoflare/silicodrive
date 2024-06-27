@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileIcon, TrashIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, FileIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { File } from "~/utils";
 import download from "downloadjs";
@@ -26,7 +26,7 @@ export default function FileButton({ file } : { file: File })   {
             <div className="col-span-3 hover:underline" onClick={_ => download(data.fileURL, data.fileName)}>
                 {file.name}
             </div>
-            <div className="col-span-3 flex items-center gap-x-3">
+            <div className="col-span-3 flex items-center gap-x-5">
                 <Dialog>
                     <DialogTrigger>
                         <TrashIcon size={20} className="text-red-600" />
@@ -55,6 +55,45 @@ export default function FileButton({ file } : { file: File })   {
                                             toast({
                                                 variant: "destructive",
                                                 description: "Failed to delete file"
+                                            });
+                                        }
+                                    }}>Yes</button>
+                                </DialogClose>
+                                <DialogClose>
+                                    <button className="bg-white text-black border px-3 py-1 rounded-md w-20 cursor-pointer">No</button>
+                                </DialogClose>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+                <Dialog>
+                    <DialogTrigger>
+                        { file.visibility === 1 ? <EyeIcon size={20} /> : <EyeOffIcon size={20} /> }
+                    </DialogTrigger>
+                    <DialogContent>
+                        <div className="flex flex-col gap-y-2">
+                            <p className="w-full text-center mb-3">Are you sure you want to change the visibility of this file?</p>
+                            <div className="flex gap-x-2 w-full items-center justify-center">
+                                <DialogClose>
+                                    <button className="bg-red-600 text-white px-3 py-1 rounded-md w-20 cursor-pointer" onClick={async _ => {
+                                        toast({
+                                            description: "Changing file visibility...",
+                                        });
+
+                                        const res = await fetch(`/api/${file.owner}/visibility/${file.path}/${file.name}`, {
+                                            method: "POST"
+                                        });
+
+                                        if (res.status === 200) {
+                                            toast({
+                                                description: "File visibility changed successfully!"
+                                            });
+                                            queryClient.invalidateQueries();
+                                        }
+                                        else    {
+                                            toast({
+                                                variant: "destructive",
+                                                description: "Failed to change file visibility"
                                             });
                                         }
                                     }}>Yes</button>

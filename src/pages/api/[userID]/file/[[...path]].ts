@@ -7,20 +7,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await getSession({ req });
     const { userID, path } = req.query;
 
-    if (!session)   {
-        return res.status(401).json({ status: 401, error: "Unauthorized" });
-    }
-
-    else if (session.user.id !== userID) {
-        return res.status(401).json({ status: 401, error: "Unauthorized" });
-    }
-
-    const newPath = path ? "/" + (path as string[]).join("/") : "/";
-    // console.log(newPath);
-
     const fileData = await db.file.findFirst({
         where: {
-            owner: session.user.id,
+            owner: userID as string ?? "",
             path: path ? "/" + (path.slice(0, -1) as string[]).join("/") : "/",
             name: path ? path[path.length - 1] : ""
         }
@@ -28,6 +17,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!fileData)  {
         return res.status(404).json({ status: 404, error: "File not found" });
+    }
+
+    if (fileData.visibility === 0) {
+        if (!session)   {
+            return res.status(401).json({ status: 401, error: "Unauthorized" });
+        }
+
+        else if (session.user.id !== userID) {
+            return res.status(401).json({ status: 401, error: "Unauthorized" });
+        }
     }
 
     const file = await supabase.storage.from("silicodrive").getPublicUrl(fileData.url);
